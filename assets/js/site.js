@@ -15,8 +15,8 @@
 
   var CART_KEY = 'nbd_cart_v1';
   var ORDER_KEY = 'nbd_last_order';
-  var SHIPPING_FLAT = 15;     // Flat shipping rate
-  var PA_TAX_RATE = 0.06;     // PA sales tax
+  var SHIPPING_FLAT = 0;      // Shipping included in print price
+  var PA_TAX_RATE = 0;        // Sales tax included in print price
 
   var money = function (n) { return '$' + Number(n).toFixed(2); };
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
@@ -230,13 +230,13 @@
     var state = form.querySelector('#state');
     function totals() {
       var sub = cartSubtotal(items);
-      var ship = SHIPPING_FLAT;
-      var tax = state.value === 'PA' ? Math.round(sub * PA_TAX_RATE * 100) / 100 : 0;
+      var ship = 0;
+      var tax = 0;
       document.querySelector('[data-co-sub]').textContent = money(sub);
-      document.querySelector('[data-co-ship]').textContent = money(ship);
-      document.querySelector('[data-co-tax]').textContent = state.value ? money(tax) : 'Enter your state';
-      document.querySelector('[data-co-total]').textContent = money(sub + ship + tax);
-      return { sub: sub, ship: ship, tax: tax, total: sub + ship + tax };
+      document.querySelector('[data-co-ship]').textContent = 'Free (included)';
+      document.querySelector('[data-co-tax]').textContent = 'Included in price';
+      document.querySelector('[data-co-total]').textContent = money(sub);
+      return { sub: sub, ship: ship, tax: tax, total: sub };
     }
     state.addEventListener('change', totals);
     totals();
@@ -279,8 +279,8 @@
     root.querySelector('[data-o-items]').innerHTML = order.items.map(function (i) {
       return '<tr><th scope="row">' + esc(i.title) + '</th><td>' + (i.type === 'paper' ? 'Paper' : 'Metal') + ' · ' + esc(i.size) + '</td><td class="num">' + i.qty + '</td><td class="num">' + money(i.price * i.qty) + '</td></tr>';
     }).join('') +
-      '<tr><th scope="row" colspan="3">Shipping</th><td class="num">' + money(order.totals.ship) + '</td></tr>' +
-      '<tr><th scope="row" colspan="3">Sales tax</th><td class="num">' + money(order.totals.tax) + '</td></tr>' +
+      '<tr><th scope="row" colspan="3">Shipping</th><td class="num">Free (included)</td></tr>' +
+      '<tr><th scope="row" colspan="3">Sales tax</th><td class="num">Included in price</td></tr>' +
       '<tr><th scope="row" colspan="3">Total</th><td class="num"><b>' + money(order.totals.total) + '</b></td></tr>';
   }
 
